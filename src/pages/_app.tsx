@@ -11,6 +11,8 @@ import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { publicProvider } from "wagmi/providers/public";
 
+import { Analytics } from "@vercel/analytics/react";
+
 const { chains, provider } = configureChains(
   [mainnet],
   [
@@ -32,10 +34,13 @@ const wagmiClient = createClient({
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains} theme={darkTheme()}>
-        <Component {...pageProps} />
-      </RainbowKitProvider>
-    </WagmiConfig>
+    <>
+      <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains} theme={darkTheme()}>
+          <Component {...pageProps} />
+        </RainbowKitProvider>
+      </WagmiConfig>
+      <Analytics />
+    </>
   );
 }

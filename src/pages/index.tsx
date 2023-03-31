@@ -6,6 +6,35 @@ import { Address, useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useSignMessage, useEnsName } from "wagmi";
 import { verifyMessage } from "ethers/lib/utils";
+import { Blessing } from "@/components/blessing";
+import { Blessings } from "@/components/blessings";
+import { SendBlessing } from "@/components/sendBlessing";
+import styled from "styled-components";
+
+const StyledMain = styled.main({
+  padding: 16,
+  width: "100%",
+  maxWidth: 600,
+  position: "absolute",
+  display: "flex",
+  flexDirection: "column",
+  height: "100%",
+  maxHeight: "100%",
+  overflow: "hidden",
+  "@media (max-width: 600px)": {
+    padding: 0,
+  },
+});
+
+const StyledTitle = styled.h1({
+  fontSize: 32,
+
+  padding: 16,
+  margin: 0,
+  "@media (max-width: 600px)": {
+    fontSize: 24
+  },
+});
 
 export default function Home() {
   const [loaded, setLoaded] = useState<boolean>(false);
@@ -65,66 +94,32 @@ export default function Home() {
       ? setBlessingsTilte("Send a blessing")
       : setBlessingsTilte("Connect to send a blessing");
   }, [isConnected, setBlessingsTilte]);
-
-  const BlessingItem: FC<{
-    text: string;
-    from: Address;
-    signature: string;
-  }> = ({ text, from, signature }) => {
-    const {data: ens} = useEnsName({ address: from });
-    const a = ens != null ? ens : from
-    return (
-      <div>
-          <h5>{"From: " + a}</h5>
-          <p>{text}</p>
-          <small>Signature: {signature}</small>
-          <br />
-          <br />
-      </div>
-    );
-  };
-
   return (
     <>
       <Head>
-        <title>LDF&apos;s World</title>
+        <title>🙏 blessed 🙏</title>
       </Head>
-      <main style={{ padding: 20 }}>
-        <h1>Welcome to LDF&apos;s world</h1>
-        <section>
-          <br />
-          <br />
-          <>
-            <h2>Leave me a blessing</h2>
-            <br />
-            {blessings?.map(
-              (blessing, i) =>
-                blessing._rawJson.fields.Blessing && (
-                  <BlessingItem
-                    key={i}
-                    text={blessing._rawJson.fields.Blessing}
-                    from={blessing._rawJson.fields.From}
-                    signature={blessing._rawJson.fields.Signature}
-                  />
-                )
-            )}
-            <h3>{blessingsTitle}</h3>
-            {isConnected && loaded && (
-              <>
-                <textarea
-                  style={{ display: "block" }}
-                  value={blessing}
-                  onChange={(e) => setBlessing(e.target.value)}
-                />
-                <br />
-                <button onClick={() => sendBlessing()}>Send Blessing</button>
-              </>
-            )}
-            <br />
-            <ConnectButton />
-          </>
-        </section>
-      </main>
+      <div
+        style={{
+          display: "flex",
+          width: "100%",
+          height: "100%",
+          justifyContent: "center",
+        }}
+      >
+        <StyledMain>
+          <StyledTitle>🙏 blessed 🙏</StyledTitle>
+          <Blessings blessings={blessings} />
+          {loaded && (
+            <SendBlessing
+              isLoading={isLoading}
+              blessing={blessing}
+              setBlessing={setBlessing}
+              sendBlessing={sendBlessing}
+            />
+          )}
+        </StyledMain>
+      </div>
     </>
   );
 }
