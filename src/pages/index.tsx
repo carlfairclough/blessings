@@ -2,9 +2,9 @@ import Head from "next/head";
 import Image from "next/image";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import Airtable, { FieldSet, Records } from "airtable";
-import { useAccount } from "wagmi";
+import { Address, useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useSignMessage } from "wagmi";
+import { useSignMessage, useEnsName } from "wagmi";
 import { verifyMessage } from "ethers/lib/utils";
 
 export default function Home() {
@@ -32,7 +32,7 @@ export default function Home() {
         }),
       });
       getBlessings().then((data) => {
-        setBlessing('')
+        setBlessing("");
         setBlessings(data);
       });
       return response.json();
@@ -66,19 +66,23 @@ export default function Home() {
       : setBlessingsTilte("Connect to send a blessing");
   }, [isConnected, setBlessingsTilte]);
 
-  const BlessingItem: FC<{ text: string; from: string; signature: string }> = ({
-    text,
-    from,
-    signature,
-  }) => (
-    <div>
-      <h5>From: {from}</h5>
-      <p>{text}</p>
-      <small>Signature: {signature}</small>
-      <br />
-      <br />
-    </div>
-  );
+  const BlessingItem: FC<{
+    text: string;
+    from: Address;
+    signature: string;
+  }> = ({ text, from, signature }) => {
+    const {data: ens} = useEnsName({ address: from });
+    const a = ens != null ? ens : from
+    return (
+      <div>
+          <h5>{"From: " + a}</h5>
+          <p>{text}</p>
+          <small>Signature: {signature}</small>
+          <br />
+          <br />
+      </div>
+    );
+  };
 
   return (
     <>
