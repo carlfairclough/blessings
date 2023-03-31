@@ -6,7 +6,6 @@ import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useSignMessage } from "wagmi";
 import { verifyMessage } from "ethers/lib/utils";
-import useSWR from "swr";
 
 export default function Home() {
   const [loaded, setLoaded] = useState<boolean>(false);
