@@ -9,15 +9,18 @@ import {
 } from "@rainbow-me/rainbowkit";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { mainnet } from "wagmi/chains";
+import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
-
+import { ChakraProvider, Container, ThemeConfig } from "@chakra-ui/react";
+import { extendTheme } from "@chakra-ui/react";
 import { Analytics } from "@vercel/analytics/react";
+import Nav from "@/components/nav";
 
 const { chains, provider } = configureChains(
   [mainnet],
   [
-    // alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
-    publicProvider(),
+    alchemyProvider({ apiKey: process.env.ALCHEMY_ID as string }),
+    // publicProvider(),
   ]
 );
 
@@ -32,15 +35,23 @@ const wagmiClient = createClient({
   provider,
 });
 
+// 2. Add your color mode config
+const config: ThemeConfig = {
+  initialColorMode: "dark",
+  useSystemColorMode: false,
+};
+const theme = extendTheme({ config });
+
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <>
+    <ChakraProvider theme={theme}>
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains} theme={darkTheme()}>
+          <Container maxW='container.xl' >         <Nav /></Container>
           <Component {...pageProps} />
         </RainbowKitProvider>
       </WagmiConfig>
       <Analytics />
-    </>
+    </ChakraProvider>
   );
 }
