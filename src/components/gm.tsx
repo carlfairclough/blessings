@@ -32,6 +32,8 @@ export const Gm: FC<{
   const i = formatAddress(issuer);
   const s = formatAddress(subject);
 
+  const [name, setName] = useState<string | undefined>()
+
   const [visible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -41,7 +43,23 @@ export const Gm: FC<{
     return () => clearTimeout(timer);
   }, [index]);
 
-  console.log(type)
+  useEffect(() => {
+    const setNames = async (address: string) => {
+      try {
+        const response: any = await fetch(
+          `/api/mongoDb/credentials/get/${address}/profile`
+        );
+        let r = await response.json();
+        if (r) {
+          setName(r.credential.name);
+        }
+      } catch (err) {
+        setName(undefined)
+      }
+    };
+
+    setNames(issuer)
+  }, []);
 
   return (
     <Fade in={visible}>
@@ -66,7 +84,7 @@ export const Gm: FC<{
           <Link href={`/${issuer}`}>
             <Tag size="md">
               <TagLeftIcon as={LinkIcon} />
-              <TagLabel>From: {issEns || i}</TagLabel>
+              <TagLabel>From: {name || issEns || i}</TagLabel>
             </Tag>
           </Link>
         </Box>
