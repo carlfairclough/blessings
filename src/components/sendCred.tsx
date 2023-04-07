@@ -12,6 +12,7 @@ import { Button, ButtonProps } from "@chakra-ui/react";
 import { gmschema } from "@/utils/schemas/gm";
 import { useToast } from "@chakra-ui/react";
 import Link from "next/link";
+import useAudio from "@/utils/general/useAudio";
 
 interface SendCredProps extends ButtonProps {
   recipient: Address;
@@ -34,6 +35,10 @@ export const SendCred: FC<SendCredProps> = ({
   const toast = useToast();
 
   const recoveredAddress = useRef<string>();
+
+  const singingBowlSend = new Audio('/singing-bowl-note-b.wav')
+  const singingBowlSent = new Audio('/singing-bowl-note-b6.wav')
+
   const { data, error, isLoading, signMessage } = useSignMessage({
     async onSuccess(data, variables) {
       // Verify signature when sign message succeeds
@@ -49,6 +54,9 @@ export const SendCred: FC<SendCredProps> = ({
         }),
       });
 
+      singingBowlSent.currentTime = 0
+      singingBowlSent.play()
+
       toast({
         title: successText,
         description: <Link href={`/${recipient}`}>View profile →</Link>,
@@ -63,14 +71,15 @@ export const SendCred: FC<SendCredProps> = ({
 
   const handleSubmit = async () => {
     if (isConnected) {
+      singingBowlSend.currentTime = 0
+      singingBowlSend.play()
       const a = await signMessage({ message: JSON.stringify(vc) });
     }
   };
 
   useEffect(() => {
     const newData = { id: recipient };
-    if (address)
-      setVc(buildVc(address as string, newData, schema, recipient));
+    if (address) setVc(buildVc(address as string, newData, schema, recipient));
   }, [isConnected, address, recipient, setVc]);
 
   if (isConnected) {
