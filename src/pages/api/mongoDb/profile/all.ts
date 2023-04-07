@@ -11,31 +11,25 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     await client.connect();
     const db = client.db("credentials");
 
-    const pipeline = [
-      {
-        $match: {
-          "credential.type": { $in: ["BioCredential"] },
+    const profiles = await db
+      .collection("profiles")
+      .aggregate([
+        {
+          $sort: { "credential.issuanceDate": -1 },
         },
-      },
-      {
-        $sort: {
-          "credential.issuanceDate": -1,
+        {
+          $group: {
+            _id: {
+              issuer: "$credential.issuer",
+            },
+            latestLink: { $first: "$$ROOT" },
+          },
         },
-      },
-      {
-        $group: {
-          _id: "$credential.credentialSubject.issuer.id",
-          la${process.env.MONGODB_USER}: { $first: "$$ROOT" },
+        {
+          $replaceRoot: { newRoot: "$latestLink" },
         },
-      },
-      {
-        $replaceRoot: {
-          newRoot: "$latest",
-        },
-      },
-    ];
-
-    const profiles = await db.collection("profiles").aggregate(pipeline).toArray();
+      ])
+      .toArray();
 
     client.close();
 

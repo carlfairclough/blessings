@@ -33,7 +33,7 @@ function Profile ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
   // const routerLegacy = useRouterLegacy();
   const path = router.query.address as string;
   console.log(path);
-  const [name, setName] = useState<string | undefined>(data.profile.credential);
+  const [name, setName] = useState<string | undefined>();
   const [ensName, setEnsName] = useState<string | undefined>();
   const [nameStatus, setNameStatus] = useState<TNameStatus>();
   const [address, setAddress] = useState<Address | undefined>();
@@ -161,9 +161,6 @@ function Profile ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
 
   return (
     <>
-      <Head>
-        <TwitterPreviewCard handle={profile?.links && profile.links[0]?.handle} displayName={profile.name || address} bio={profile?.bio} />
-      </Head>
       <Flex width="full" justifyContent="center" p="4">
         <Box width="full" maxWidth="container.xl">
           {/* <SignIn /> */}
@@ -194,7 +191,7 @@ function Profile ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
                 )}
               </Flex>
             </Box>
-            <Flex flexWrap="wrap" justifyContent="space-between" w="full">
+            <Flex flexWrap="wrap" justifyContent="space-between" w="full" pb={50}>
               {isLoaded && mongoVcs && (
                 <Vcs
                   credentials={[...mongoVcs]}
@@ -215,32 +212,13 @@ export default Profile;
 
 type Data = {
   address: string,
-  profile: any,
-  credentials: any,
-  links: any,
 }
 
 export const getServerSideProps: GetServerSideProps<{ data: Data }> = async ( {query: {address}}) => {
-  const getCredentials = await fetch(
-    `${process.env.NEXT_PUBLIC_VERCEL_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/mongoDb/credentials/get/${address}`
-  );
-  const credentials = await getCredentials.json();
   
-  const getProfile = await fetch(
-    `${process.env.NEXT_PUBLIC_VERCEL_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/mongoDb/credentials/get/${address}/profile`
-  );
-  const profile = await getProfile.json();
-
-  const getLinks = await fetch(
-    `${process.env.NEXT_PUBLIC_VERCEL_PROTOCOL}://${process.env.NEXT_PUBLIC_VERCEL_URL}/api/mongoDb/credentials/get/${address}/accountLinks`
-  );
-  const links = await getLinks.json();
 
   const data: Data = await {
     address: address as string,
-    credentials: credentials,
-    profile: profile,
-    links: links,
   } 
 
   return {

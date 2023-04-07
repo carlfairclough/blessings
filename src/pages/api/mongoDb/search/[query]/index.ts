@@ -69,7 +69,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
               handle: "$credential.handle",
               id: "$credential.credentialSubject.id",
             },
-            la${process.env.MONGODB_USER}: { $max: "$_id" },
+            latest: { $max: "$_id" },
             doc: { $last: "$$ROOT" },
           },
         },

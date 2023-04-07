@@ -44,8 +44,6 @@ const ProfileCard: FC<ProfileCardProps> = ({
         );
         const r = await response.json();
         if (r) {
-          console.log("setting account links");
-          console.log(r);
           setLinks(r);
         } else {
           setLinks(r);
@@ -78,9 +76,9 @@ const ProfileCard: FC<ProfileCardProps> = ({
       ) {
         n = "verified";
       } else if (phishingNames?.some((name) => name === name)) {
-        n = "suspicious";
-      } else {
         n = "unverified";
+      } else {
+        n = "suspicious";
       }
       setStatus(n);
     }
@@ -111,19 +109,14 @@ const ProfileCard: FC<ProfileCardProps> = ({
         {image ? (
           <Avatar src={image} size="2xl" boxShadow="outline" />
         ) : (
-          <Box
-            sx={{
-              width: "100%",
-              paddingBottom: "100%",
-              borderRadius: 500,
-            }}
-          />
+          <Box height={124} width="100%" />
         )}
         <Text color={"purple"} fontSize="xs" textTransform={"uppercase"} mt={3}>
           Name
         </Text>
         <Text color={"purple"} fontSize="m">
-          {displayName || e || "error"} <NameStatusTag status={nameStatus || status} />
+          {displayName || e || "error"}{" "}
+          <NameStatusTag status={nameStatus || status} />
         </Text>
         {displayName && (
           <Text color={"purple"} fontSize="xs" textTransform={"uppercase"}>
@@ -134,7 +127,7 @@ const ProfileCard: FC<ProfileCardProps> = ({
         <Text color={"purple"} fontSize="xs" textTransform={"uppercase"} mt={3}>
           Bio
         </Text>
-        <Text color={"purple"} noOfLines={3}>
+        <Text color={"purple"} noOfLines={3} >
           {bio || "Bio not set"}
         </Text>
       </Card>
