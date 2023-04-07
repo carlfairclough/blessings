@@ -28,6 +28,7 @@ export const Vcs: FC<{
               cred: {
                 issuer: entry.issuer?.id,
                 subject: entry.credentialSubject?.id,
+                type: entry.type,
               },
             };
             return <Gm key={i} {...props} />;

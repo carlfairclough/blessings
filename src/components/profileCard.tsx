@@ -1,3 +1,4 @@
+import { generateJSXMeshGradient } from "@/utils/general/meshGradient";
 import { phishingNames } from "@/utils/lists/phishingNames";
 import {
   Avatar,
@@ -93,6 +94,9 @@ const ProfileCard: FC<ProfileCardProps> = ({
         borderRadius={16}
         padding={4}
         position="relative"
+        sx={
+          generateJSXMeshGradient(6, address)
+        }
         _before={{
           zIndex: -1,
           content: "''",
@@ -101,7 +105,7 @@ const ProfileCard: FC<ProfileCardProps> = ({
           right: 0,
           top: 0,
           bottom: 0,
-          backgroundImage: "url(https://gm.disco.xyz/images/holo.jpeg)",
+          ...generateJSXMeshGradient(6, address),
           filter: "blur(24px)",
         }}
         {...rest}

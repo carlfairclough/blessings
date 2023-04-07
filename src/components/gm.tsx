@@ -15,13 +15,16 @@ import {
 import Link from "next/link";
 import { SendGm } from "./sendGm";
 import { LinkIcon } from "@chakra-ui/icons";
+import { gmschema } from "@/utils/schemas/gm";
+import { blessingschema } from "@/utils/schemas/blessing";
+import { SendCred } from "./sendCred";
 
 export const Gm: FC<{
-  cred: { subject: Address; issuer: Address };
+  cred: { subject: Address; issuer: Address, type: string[] };
   handleDelete?: () => void;
   onSend?: () => void;
   index?: number;
-}> = ({ cred: { subject, issuer }, handleDelete, onSend, index }) => {
+}> = ({ cred, cred: { subject, issuer, type }, handleDelete, onSend, index }) => {
   const { data: issEns } = useEnsName({ address: issuer });
   const { data: subEns } = useEnsName({ address: subject });
   const formatAddress = (addr: string) =>
@@ -38,6 +41,8 @@ export const Gm: FC<{
     return () => clearTimeout(timer);
   }, [index]);
 
+  console.log(type)
+
   return (
     <Fade in={visible}>
       <Card
@@ -53,8 +58,8 @@ export const Gm: FC<{
         background={"Background"}
       >
         <Heading as="h4" size="md">
-          {" "}
-          GM
+          {type && type[1] == 'GmCredential' && 'GM'}
+          {type && type[1] == 'Blessing' && '🙏 blessing 🕊 '  }
         </Heading>
         <Box mt={3}>
           {/* <Tag size="md">To: {subEns || s}</Tag> */}
@@ -65,11 +70,14 @@ export const Gm: FC<{
             </Tag>
           </Link>
         </Box>
-        {handleDelete && onSend && (
-          <SendGm
+        {handleDelete && onSend && (type[1] == 'GmCredential' || type[1] == 'Blessing') && (
+          <SendCred
             recipient={issuer}
             onSend={() => onSend()}
-            customLabel={"Say it back"}
+            colorScheme={type[1] == 'Blessing' ? 'teal' : undefined}
+            successText={type[1] == 'GmCredential' ? 'gm sent, ser' : 'good karma for you'}
+            schema={type[1] == 'GmCredential' ? gmschema : blessingschema}
+            customLabel={type[1] == 'GmCredential' ? "Say it back" : '🕊 mutual bless' }
             mb={2}
             mt={3}
           />

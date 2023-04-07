@@ -27,8 +27,12 @@ import { phishingNames } from "@/utils/lists/phishingNames";
 import Head from "next/head";
 import TwitterPreviewCard from "@/components/twitterPreviewCard";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { blessingschema } from "@/utils/schemas/blessing";
+import { SendCred } from "@/components/sendCred";
 
-function Profile ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+function Profile({
+  data,
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   // const routerLegacy = useRouterLegacy();
   const path = router.query.address as string;
@@ -74,8 +78,6 @@ function Profile ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
     }
   }, [path]);
 
-
-
   useEffect(() => {
     const mongoData = async (address: string) => {
       const response: any = await fetch(
@@ -106,7 +108,7 @@ function Profile ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
     }).then((res) => {
       console.log(res);
       toast({
-        title: `GM deleted ☹️`,
+        title: `deleted ☹️`,
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -158,7 +160,6 @@ function Profile ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
     }
   }, [address]);
 
-
   return (
     <>
       <Flex width="full" justifyContent="center" p="4">
@@ -177,12 +178,23 @@ function Profile ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
               )}
               <Flex flexDirection={"column"}>
                 {isLoaded && address && isConnected && !err && (
-                  <SendGm
-                    colorScheme="yellow"
-                    recipient={address}
-                    my={4}
-                    onSend={() => setRefresh(refresh + 1)}
-                  />
+                  <>
+                    <SendGm
+                      colorScheme="yellow"
+                      recipient={address}
+                      my={4}
+                      onSend={() => setRefresh(refresh + 1)}
+                    />
+                    <SendCred
+                      customLabel={"🙏 bless 🙏"}
+                      schema={blessingschema}
+                      colorScheme="teal"
+                      recipient={address}
+                      successText={(profile?.name || ensName || address) + ' blessed 🕊'}
+                      mb={4}
+                      onSend={() => setRefresh(refresh + 1)}
+                    />
+                  </>
                 )}
                 {isLoaded && address == userAddress && isConnected && !err && (
                   <Link href={address + "/manage"}>
@@ -191,7 +203,12 @@ function Profile ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
                 )}
               </Flex>
             </Box>
-            <Flex flexWrap="wrap" justifyContent="space-between" w="full" pb={50}>
+            <Flex
+              flexWrap="wrap"
+              justifyContent="space-between"
+              w="full"
+              pb={50}
+            >
               {isLoaded && mongoVcs && (
                 <Vcs
                   credentials={[...mongoVcs]}
@@ -206,24 +223,24 @@ function Profile ({ data }: InferGetServerSidePropsType<typeof getServerSideProp
       </Flex>
     </>
   );
-};
+}
 
 export default Profile;
 
 type Data = {
-  address: string,
-}
+  address: string;
+};
 
-export const getServerSideProps: GetServerSideProps<{ data: Data }> = async ( {query: {address}}) => {
-  
-
+export const getServerSideProps: GetServerSideProps<{ data: Data }> = async ({
+  query: { address },
+}) => {
   const data: Data = await {
     address: address as string,
-  } 
+  };
 
   return {
     props: {
       data,
     },
-  }
-}
+  };
+};
