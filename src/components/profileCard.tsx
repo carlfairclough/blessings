@@ -82,7 +82,7 @@ const ProfileCard: FC<ProfileCardProps> = ({
       }
       setStatus(n);
     }
-  }, [links, nameStatus]);
+  }, [links, nameStatus, address, displayName]);
 
   return (
     <Fade in={visible}>

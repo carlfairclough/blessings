@@ -71,8 +71,8 @@ const Search = () => {
           </Text>
           {results?.profiles.map(({ credential }, i) => {
             return (
-              <Link href={"/" + credential.credentialSubject.id} passHref={true}>
-                <Box px={4} py={2} minWidth={320} key={i}>
+              <Link href={"/" + credential.credentialSubject.id} key={i}>
+                <Box px={4} py={2} minWidth={320}>
                   {credential.image && <Avatar src={credential.image} />}
                   {credential.name && (
                     <Text as="h4" size="m">

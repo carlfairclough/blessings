@@ -1,7 +1,7 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const uri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@${process.env.MONGODB_URI}/?retryWrites=true&w=majority`;
   const client = new MongoClient(uri, {
     serverApi: ServerApiVersion.v1,
@@ -38,3 +38,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     console.error(e);
   }
 };
+
+export default handler
