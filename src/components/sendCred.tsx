@@ -12,7 +12,6 @@ import { Button, ButtonProps } from "@chakra-ui/react";
 import { gmschema } from "@/utils/schemas/gm";
 import { useToast } from "@chakra-ui/react";
 import Link from "next/link";
-import useAudio from "@/utils/general/useAudio";
 
 interface SendCredProps extends ButtonProps {
   recipient: Address;

@@ -49,6 +49,7 @@ export default function Home() {
           {profiles && profiles?.map((profile: any, i: Key) => (
             <Link key={i} href={"/" + profile.credential.credentialSubject.id}>
               <ProfileCard
+                m={4}
                 image={profile.credential?.image}
                 address={profile.credential.credentialSubject.id}
                 displayName={profile.credential?.name}
