@@ -94,9 +94,14 @@ const ProfileCard: FC<ProfileCardProps> = ({
         borderRadius={16}
         padding={4}
         position="relative"
-        sx={
-          generateJSXMeshGradient(6, address)
-        }
+        transition="all 0.5s ease-in-out"
+        sx={generateJSXMeshGradient(6, address)}
+        _hover={{
+          // ...generateJSXMeshGradient(6, address.substring(0, 8)),
+          ":before": {
+            ...generateJSXMeshGradient(6, address.substring(0, 8)),
+          },
+        }}
         _before={{
           zIndex: -1,
           content: "''",
@@ -105,6 +110,8 @@ const ProfileCard: FC<ProfileCardProps> = ({
           right: 0,
           top: 0,
           bottom: 0,
+
+          transition: "all 0.5s ease-in-out",
           ...generateJSXMeshGradient(6, address),
           filter: "blur(24px)",
         }}
@@ -131,7 +138,7 @@ const ProfileCard: FC<ProfileCardProps> = ({
         <Text color={"purple"} fontSize="xs" textTransform={"uppercase"} mt={3}>
           Bio
         </Text>
-        <Text color={"purple"} noOfLines={3} >
+        <Text color={"purple"} noOfLines={3}>
           {bio || "Bio not set"}
         </Text>
       </Card>

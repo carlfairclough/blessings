@@ -62,13 +62,11 @@ const genGrad = (
   // reverse the array to use last characters
   const seeds = seed.slice((length + 1) * -1);
   return Array.from({ length }, (_, i) => {
-    console.log(seeds[i])
     if (seeds[i].length) {
       const grad = `radial-gradient(at ${getPercent(i, seeds[i])}% ${getPercent(
         i * 1,
         seeds[i]
       )}%, ${colors[i]} 0px, transparent 50%)`;
-      console.log(grad)
       return grad
     }
     return ``;
@@ -80,7 +78,6 @@ const genStops = (length: number, fullSeed: string) => {
 
   const colors = genColors(length, getColor(seedArr[seedArr.length - 1]));
   const proprieties = genGrad(length, colors, seedArr);
-  console.log(proprieties)
   return [colors[0], proprieties.join(",")];
 };
 
