@@ -10,16 +10,15 @@ import { Blessing } from "@/components/blessing";
 import { Blessings } from "@/components/blessings";
 import { SendBlessing } from "@/components/sendBlessing";
 import styled from "styled-components";
-import { Container, Flex, Grid, Text } from "@chakra-ui/react";
+import { Container, Flex, Grid, SimpleGrid, Text } from "@chakra-ui/react";
 import ProfileCard from "@/components/profileCard";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import Link from "next/link";
 import useSWR from "swr";
 
-
 export default function Home() {
   // const { profiles } = data;
-  const [profiles, setProfiles] = useState<any[]>([])
+  const [profiles, setProfiles] = useState<any[]>([]);
   useEffect(() => {
     const mongoData = async () => {
       const response: any = await fetch(
@@ -27,7 +26,7 @@ export default function Home() {
       );
       const r = await response.json();
       if (r) {
-        console.log(r)
+        console.log(r);
         setProfiles(r);
       } else {
         setProfiles([]);
@@ -45,19 +44,27 @@ export default function Home() {
         <Text as="h1" fontSize="l" mb={8}>
           Blessed Profilesss
         </Text>
-        <Flex flexWrap={"wrap"} justifyContent="space-between" pb={50}>
-          {profiles && profiles?.map((profile: any, i: Key) => (
-            <Link key={i} href={"/" + profile.credential.credentialSubject.id}>
-              <ProfileCard
-                m={4}
-                image={profile.credential?.image}
-                address={profile.credential.credentialSubject.id}
-                displayName={profile.credential?.name}
-                bio={profile.credential?.bio}
-              />
-            </Link>
-          ))}
-        </Flex>
+        <SimpleGrid
+          columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
+          gridColumnGap={{ base: 8, md: 16 }}
+          gridRowGap={{ base: 8, md: 16 }}
+          pb={50}
+        >
+          {profiles &&
+            profiles?.map((profile: any, i: Key) => (
+              <Link
+                key={i}
+                href={"/" + profile.credential.credentialSubject.id}
+              >
+                <ProfileCard
+                  image={profile.credential?.image}
+                  address={profile.credential.credentialSubject.id}
+                  displayName={profile.credential?.name}
+                  bio={profile.credential?.bio}
+                />
+              </Link>
+            ))}
+        </SimpleGrid>
       </Container>
     </>
   );

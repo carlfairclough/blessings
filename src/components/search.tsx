@@ -11,8 +11,9 @@ import {
 } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { Address, useAccount, useEnsAddress, useEnsName } from "wagmi";
 
 const Search = () => {
   const { address } = useAccount();
@@ -21,6 +22,10 @@ const Search = () => {
   const [results, setResults] = useState<{ links: any[]; profiles: any[] }>();
   const [isFocused, setIsFocused] = useState(false);
   const [value, setValue] = useState<string | undefined>();
+  const { push } = useRouter();
+  const [isDelayOver, setIsDelayOver] = useState(true);
+  const [ensAddress, setEnsAddress] = useState<string | null | undefined>();
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     setIsLoaded(true);
@@ -28,22 +33,41 @@ const Search = () => {
 
   const handleChange = (e: any) => {
     const { value } = e.target;
-
     setValue(value);
   };
 
+  const { data: ens } = useEnsAddress({
+    name: value,
+  });
+
   useEffect(() => {
-    if (value !== undefined || "") {
-      const search = async () => {
-        const response: any = await fetch(`/api/mongoDb/search/${value}`);
-        let r = await response.json();
+    const fetchData = async () => {
+      if (value) {
+        console.log(`/api/mongoDb/search/${ens || value}`)
+        const response: any = await fetch(
+          `/api/mongoDb/search/${ens || value}`
+        );
+        const r = await response.json();
         if (r) {
-          console.log("results", r);
           setResults(r);
         }
-      };
-      search();
+      }
+    };
+
+    if (isDelayOver) {
+      setResults(undefined);
+      fetchData();
     }
+  }, [value, isDelayOver]);
+
+  useEffect(() => {
+    setIsDelayOver(true);
+    const a = setTimeout(() => {
+      setIsDelayOver(true);
+    }, 3000);
+    return () => {
+      clearTimeout(a);
+    };
   }, [value]);
 
   return (
@@ -61,7 +85,7 @@ const Search = () => {
         onChange={handleChange}
         onFocus={() => setIsFocused(true)}
         onBlur={() => {
-          setIsFocused(false), setValue(undefined), setResults(undefined);
+          setIsFocused(false);
         }}
       />
       <Fade in={isFocused && results?.profiles.length ? true : false}>
@@ -71,7 +95,7 @@ const Search = () => {
           </Text>
           {results?.profiles.map(({ credential }, i) => {
             return (
-              <Link href={"/" + credential.credentialSubject.id} key={i}>
+              <a href={"/" + credential.credentialSubject.id} key={i}>
                 <Box px={4} py={2} minWidth={320}>
                   {credential.image && <Avatar src={credential.image} />}
                   {credential.name && (
@@ -85,7 +109,7 @@ const Search = () => {
                     </Tag>
                   )}
                 </Box>
-              </Link>
+              </a>
             );
           })}
         </Card>

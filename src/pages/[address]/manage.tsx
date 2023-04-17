@@ -16,6 +16,11 @@ import {
   FormHelperText,
   InputRightElement,
   InputGroup,
+  Tooltip,
+  Text,
+  Grid,
+  Card,
+  Heading,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { FC, Key, useCallback, useEffect, useRef, useState } from "react";
@@ -25,6 +30,8 @@ import CreateTwitterLink from "@/components/createTwitterLink";
 import truncateAddress from "@/utils/truncateAddress";
 import { phishingNames } from "@/utils/lists/phishingNames";
 import NameStatusTag from "@/components/nameStatusTag";
+import { GetServerSideProps } from "next";
+import CeramicConnect from "@/components/linkCeramic";
 
 const Manage: FC = () => {
   const router = useRouter();
@@ -39,6 +46,7 @@ const Manage: FC = () => {
   const [refresh, setRefresh] = useState<number>(0);
   const [profile, setProfile] = useState<any>();
   const [isLoaded, setIsLoaded] = useState<boolean>();
+  const [linkedDids, setLinkedDids] = useState<any[]>();
 
   const [nameStatus, setNameStatus] = useState<
     "verified" | "unverified" | "suspicious" | undefined
@@ -87,9 +95,19 @@ const Manage: FC = () => {
           setLinks(r);
         }
       };
+
+      const linkedDids = async () => {
+        const response: any = await fetch(
+          `/api/mongoDb/credentials/get/${address}/linkedDids`
+        );
+        const r = await response.json();
+        setLinkedDids(r);
+      };
+
       links();
+      linkedDids();
     }
-  }, [address, setLinks, refresh]);
+  }, [address, setLinks, setLinkedDids, refresh]);
 
   useEffect(() => {
     const profile = async () => {
@@ -158,23 +176,52 @@ const Manage: FC = () => {
 
   return (
     <Flex width="full" justifyContent="center" p="4">
-      <Box width="full" maxWidth="container.xl">
+      <Grid
+        w="full"
+        maxW="container.xl"
+        gridTemplateColumns={{ base: "1fr", lg: "1fr 1fr 1fr 1fr" }}
+        gridColumnGap={"16"}
+        gridRowGap={"16"}
+      >
         {/* <SignIn /> */}
 
-        <Flex as="header" w="full" alignItems={"flex-start"}>
-          <Box mr={12}>
-            {address && isLoaded && (
-              <ProfileCard
-                status={nameStatus}
-                displayName={displayName}
-                bio={bio}
-                address={address as Address}
-                image={image}
-              />
-            )}
-          </Box>
-          <Box mr={12}></Box>
-          <Flex flexWrap="wrap" justifyContent="space-between" w="full">
+        <Flex
+          as="header"
+          gridColumnStart={0}
+          gridColumnEnd={0}
+          height="fit-content"
+        >
+          {address && isLoaded && (
+            <ProfileCard
+              status={nameStatus}
+              displayName={displayName}
+              bio={bio}
+              address={address as Address}
+              image={image}
+            />
+          )}
+        </Flex>
+        <Card
+          flexWrap="wrap"
+          justifyContent="space-between"
+          w="full"
+          height="fit-content"
+          gridColumnStart={{ base: 1, lg: 2 }}
+          gridColumnEnd={{ base: 1, lg: 4 }}
+          background={"blackAlpha.300"}
+        >
+          <Heading
+            size="md"
+            as="h2"
+            py={4}
+            px={8}
+            borderBottom={"1px"}
+            borderBottomColor={"whiteAlpha.200"}
+            color="GrayText"
+          >
+            Profile credential
+          </Heading>
+          <Box px={8} py={8}>
             <FormControl>
               <FormLabel>Display Name</FormLabel>
               <InputGroup>
@@ -190,7 +237,7 @@ const Manage: FC = () => {
               </InputGroup>
               <Input
                 type="text"
-                value={displayName || ''}
+                value={displayName || ""}
                 onChange={(e) => setDisplayName(e.target.value)}
               />
 
@@ -209,15 +256,20 @@ const Manage: FC = () => {
                       </Tag>
                     )
                 )}
-                {isLoaded && address && (
-                  <Tag
-                    mx={2}
-                    onClick={() => setDisplayName(address)}
-                    cursor="pointer"
-                  >
-                    {truncateAddress(address as string)}
-                  </Tag>
-                )}
+                <Box display="block">
+                  {isLoaded && address && (
+                    <Tag
+                      mx={2}
+                      onClick={() => setDisplayName(address)}
+                      cursor="pointer"
+                      minWidth="fit-content"
+                      flexShrink={0}
+                      display={"inline-block"}
+                    >
+                      {truncateAddress(address as string)}
+                    </Tag>
+                  )}
+                </Box>
                 <CreateTwitterLink />
               </FormHelperText>
             </FormControl>
@@ -225,22 +277,98 @@ const Manage: FC = () => {
               <FormLabel>Image</FormLabel>
               <Input
                 type="text"
-                value={image || ''}
+                value={image || ""}
                 onChange={(e) => setImage(e.target.value)}
               />
             </FormControl>
+
             <FormControl mt={8}>
               <FormLabel>Bio</FormLabel>
-              <Textarea value={bio || ''} onChange={(e) => setBio(e.target.value)} />
+              <Textarea
+                value={bio || ""}
+                onChange={(e) => setBio(e.target.value)}
+              />
             </FormControl>
             <Button onClick={handleSave} mt={8}>
               Save
             </Button>
-          </Flex>
-        </Flex>
-      </Box>
+          </Box>
+        </Card>
+        <CeramicConnect linkedDids={linkedDids} onComplete={() => setRefresh(refresh+1)} />
+      </Grid>
     </Flex>
   );
 };
 
 export default Manage;
+
+// type Data = {
+//   address: Address;
+//   ensName: `${string}.eth` | null;
+//   profile: any | null;
+//   links: any[] | null;
+// };
+
+// export const getServerSideProps: GetServerSideProps<{ data: Data }> = async ({
+//   query: { address },
+//   req: { headers },
+// }) => {
+//   let data: Data = {
+//     address: address as Address,
+//     ensName: null,
+//     profile: null,
+//     links: null,
+//   };
+
+//   const proto = headers["x-forwarded-proto"];
+
+//   const a = address as string;
+
+//   // if (a?.endsWith(".eth")) {
+//   //   try {
+//   //     const addr = await fetchEnsAddress({
+//   //       name: address as string,
+//   //     });
+//   //     data.address = (await addr) || (address as Address);
+//   //     data.ensName = address as `${string}.eth`;
+//   //   } catch (err) {
+//   //     // 404
+//   //   }
+//   // } else {
+//   //   data.address = address as Address;
+//   // }
+
+//   const getProfile = async () => {
+//     try {
+//       const response: any = await fetch(
+//         `${proto}://${headers.host}/api/mongoDb/credentials/get/${data.address}/profile`
+//       );
+//       let r = await response.json();
+//       return r.credential;
+//     } catch (err) {
+//       console.warn("profile error", err);
+//     }
+//   };
+//   const profile = await getProfile();
+
+//   const getLinks = async () => {
+//     const response: any = await fetch(
+//       `${proto}://${headers.host}/api/mongoDb/credentials/get/${data.address}/accountLinks`
+//     );
+//     const r = await response.json();
+//     if (r) {
+//       return r.map((l: any) => l.credential);
+//     }
+//     return null;
+//   };
+//   const links = await getLinks();
+
+//   data.profile = profile || null;
+//   data.links = links || null;
+
+//   return {
+//     props: {
+//       data,
+//     },
+//   };
+// };

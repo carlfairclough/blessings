@@ -1,3 +1,4 @@
-const truncateAddress = (addr: string) => addr.slice(0, 6) + "..." + addr.slice(-4);
+const truncateAddress = (addr: string, start?: number, end?: number) =>
+  addr.slice(0, start || 6) + "..." + addr.slice(-(end || 4));
 
-export default truncateAddress
+export default truncateAddress;

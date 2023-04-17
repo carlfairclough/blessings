@@ -1,6 +1,24 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
-
+/**
+ * @swagger
+ * /api/mongoDb/credentials/delete:
+ *   delete:
+ *     description: Delete a credential credential (TBD, validation)
+ *     parameters:
+ *      - in: header
+ *        name: credential.id
+ *        schema: 
+ *          type: string,
+ *          required: true,
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: No credential supplied
+ *       500:
+ *         description: Failure
+ */
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { id } = JSON.parse(req.body);
   const uri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@${process.env.MONGODB_URI}/?retryWrites=true&w=majority`;

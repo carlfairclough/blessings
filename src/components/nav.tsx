@@ -6,13 +6,34 @@ import { useAccount } from "wagmi";
 import Search from "./search";
 
 const Nav = () => {
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const [isLoaded, setIsLoaded] = useState(false);
+  const [image, setImage] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     setIsLoaded(true);
   }, []);
+
+  useEffect(() => {
+    const image = async (address: string) => {
+      try {
+        const response: any = await fetch(
+          `/api/mongoDb/credentials/get/${address}/profile`
+        );
+        let r = await response.json();
+        if (r) {
+          setImage(r.credential.image);
+        }
+      } catch (err) {
+        setImage(undefined);
+        console.warn("profile error", err);
+      }
+    };
+    if (address) {
+      image(address);
+    }
+  }, [address]);
 
   return (
     <Flex flexDirection="row" width="100%" pb={8} pt={4} alignItems={"center"}>
@@ -24,9 +45,9 @@ const Nav = () => {
       </Link>
       <Search />
       <ConnectButton />
-      {isLoaded && (
+      {isLoaded && isConnected && (
         <Link href={"/" + address}>
-          <Avatar src="https://picsum.photos/120" />
+          <Avatar ml={4} src={image} />
         </Link>
       )}
     </Flex>

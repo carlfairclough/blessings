@@ -1,6 +1,22 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 import type { NextApiRequest, NextApiResponse } from "next";
-
+/**
+ * @swagger
+ * /api/mongoDb/credentials/create:
+ *   post:
+ *     description: Posts a profile credential (TBD, validation)
+ *     parameters:
+ *      - in: header
+ *        name: credential
+ *        schema: 
+ *          type: string,
+ *          required: true,
+ *     responses:
+ *       200:
+ *         description: Success
+ *       500:
+ *         description: Failure
+ */
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const { recipient, credential, signature } = JSON.parse(req.body);
   const uri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@${process.env.MONGODB_URI}/?retryWrites=true&w=majority`;

@@ -1,10 +1,9 @@
 import { JSONSchema7 } from "json-schema";
 
-export const accountLinkSchema: JSONSchema7 = {
-  $id: "https://no.co",
+export const didLinkSchema: JSONSchema7 = {
+  $id: "https://no.co/idkk",
   $schema: "http://json-schema.org/draft-07/schema#",
-  description:
-    "Basic public profile",
+  description: "Allows a DID to act on behalf of another",
   properties: {
     "@context": {
       anyOf: [
@@ -42,18 +41,6 @@ export const accountLinkSchema: JSONSchema7 = {
       },
       required: ["id"],
       type: "object",
-    },
-    handle: {
-      format: "string",
-      type: "string",
-    },
-    evidence: {
-      format: "string",
-      type: "string",
-    },
-    platform: {
-      format: "string",
-      type: "string",
     },
     expirationDate: {
       format: "date-time",
@@ -99,13 +86,7 @@ export const accountLinkSchema: JSONSchema7 = {
       ],
     },
   },
-  required: [
-    "@context",
-    "type",
-    "issuer",
-    "issuanceDate",
-    "credentialSubject",
-  ],
-  title: "Account Link Credential",
+  required: ["@context", "type", "issuer", "issuanceDate", "credentialSubject"],
+  title: "DID Link Credential",
   type: "object",
 };

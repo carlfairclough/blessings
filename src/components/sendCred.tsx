@@ -43,7 +43,6 @@ export const SendCred: FC<SendCredProps> = ({
       // Verify signature when sign message succeeds
       const address = verifyMessage(variables.message, data);
       recoveredAddress.current = address;
-      console.log(variables);
       const response = await fetch("/api//mongoDb/credentials/create", {
         method: "POST",
         body: JSON.stringify({

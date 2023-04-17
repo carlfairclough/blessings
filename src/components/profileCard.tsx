@@ -10,9 +10,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import Image from "next/image";
-import { FC, Key, useEffect, useState } from "react";
-import { Address } from "wagmi";
+import { FC, Fragment, Key, useEffect, useState } from "react";
+import { Address, useEnsAddress, useEnsName } from "wagmi";
 import NameStatusTag, { TNameStatus } from "./nameStatusTag";
+import truncateAddress from "@/utils/truncateAddress";
 
 interface ProfileCardProps extends CardProps {
   image?: string;
@@ -35,7 +36,12 @@ const ProfileCard: FC<ProfileCardProps> = ({
   const [visible, setIsVisible] = useState(false);
   const e = address && address.slice(0, 6) + "..." + address.slice(-4);
   const [links, setLinks] = useState<any[] | undefined>([]);
+  const [linkedDids, setLinkedDids] = useState<any[] | undefined>([]);
   const [status, setStatus] = useState<TNameStatus>(nameStatus);
+
+  const { data: ens, isError } = useEnsName({
+    address: address,
+  });
 
   useEffect(() => {
     if (!nameStatus) {
@@ -50,11 +56,23 @@ const ProfileCard: FC<ProfileCardProps> = ({
           setLinks(r);
         }
       };
+
+      const linkedDids = async () => {
+        const response: any = await fetch(
+          `/api/mongoDb/credentials/get/${address}/linkedDids`
+        );
+        const r = await response.json();
+        if (r) {
+          setLinkedDids(r);
+        } else {
+          setLinkedDids(r);
+        }
+      };
       if (address) {
-        links();
+        linkedDids();
       }
     }
-  }, [address, nameStatus, setLinks]);
+  }, [address, nameStatus, setLinks, setLinkedDids]);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -90,7 +108,6 @@ const ProfileCard: FC<ProfileCardProps> = ({
       <Card
         backgroundImage={"url(https://gm.disco.xyz/images/holo.jpeg)"}
         backgroundSize="cover"
-        width="250px"
         borderRadius={16}
         padding={4}
         position="relative"
@@ -99,10 +116,14 @@ const ProfileCard: FC<ProfileCardProps> = ({
         _hover={{
           // ...generateJSXMeshGradient(6, address.substring(0, 8)),
           ":before": {
-            ...generateJSXMeshGradient(6, address.substring(0, 8)),
+            opacity: 0,
+          },
+          ":after": {
+            opacity: 1,
           },
         }}
         _before={{
+          opacity: 1,
           zIndex: -1,
           content: "''",
           position: "absolute",
@@ -113,6 +134,19 @@ const ProfileCard: FC<ProfileCardProps> = ({
 
           transition: "all 0.5s ease-in-out",
           ...generateJSXMeshGradient(6, address),
+          filter: "blur(24px)",
+        }}
+        _after={{
+          opacity: 0,
+          zIndex: -2,
+          content: "''",
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          transition: "all 0.5s ease-in-out",
+          ...generateJSXMeshGradient(6, address.substring(0, 8)),
           filter: "blur(24px)",
         }}
         {...rest}
@@ -131,7 +165,10 @@ const ProfileCard: FC<ProfileCardProps> = ({
         </Text>
         {displayName && (
           <Text color={"purple"} fontSize="xs" textTransform={"uppercase"}>
-            {e}
+            {(!isError && ens) || e}
+            {linkedDids?.map((cred, i) => (
+              <Box key={i}>{truncateAddress(cred.credential?.issuer.id, 8, 4)}</Box>
+            ))}
           </Text>
         )}
 
