@@ -11,12 +11,14 @@ import { configureChains, createClient, WagmiConfig } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
-import { ChakraProvider, Container, ThemeConfig } from "@chakra-ui/react";
+import { ChakraProvider, Container, ThemeConfig, useDisclosure } from "@chakra-ui/react";
 import { extendTheme } from "@chakra-ui/react";
 import { Analytics } from "@vercel/analytics/react";
 import Nav from "@/components/nav";
 import NextNProgress from "nextjs-progressbar";
 import "../utils/swaggerDark.css";
+import { useRouter } from "next/router";
+import DiscordModal from "@/modals/discordLink";
 
 const { chains, provider } = configureChains(
   [mainnet],
@@ -45,6 +47,11 @@ const config: ThemeConfig = {
 const theme = extendTheme({ config });
 
 export default function App({ Component, pageProps }: AppProps) {
+  const { query: linkdiscord } = useRouter()
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  if (linkdiscord) {
+    
+  }
   return (
     <ChakraProvider theme={theme}>
       <WagmiConfig client={wagmiClient}>
@@ -54,6 +61,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <Nav />
           </Container>
           <Component {...pageProps} />
+          <DiscordModal />
         </RainbowKitProvider>
       </WagmiConfig>
       <Analytics />

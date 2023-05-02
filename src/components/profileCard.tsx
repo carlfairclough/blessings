@@ -112,6 +112,7 @@ const ProfileCard: FC<ProfileCardProps> = ({
         padding={4}
         position="relative"
         transition="all 0.5s ease-in-out"
+        backdropFilter={'grayscale(100%)'}
         sx={generateJSXMeshGradient(6, address)}
         _hover={{
           // ...generateJSXMeshGradient(6, address.substring(0, 8)),

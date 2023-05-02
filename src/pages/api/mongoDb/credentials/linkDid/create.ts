@@ -6,8 +6,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const uri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASS}@${process.env.MONGODB_URI}/?retryWrites=true&w=majority`;
 
   const client = new MongoClient(uri, {
-    // useNewUrlParser: true,
-    // useUnifiedTopology: true,
     serverApi: ServerApiVersion.v1,
   });
 

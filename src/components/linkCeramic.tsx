@@ -72,8 +72,8 @@ const CeramicConnect: FC<{ linkedDids?: any[], onComplete: () => void }> = ({ li
       console.log('signing')
       const vc = await buildVc(did3, { id: address }, didLinkSchema, address);
       const link = await did.createJWS(vc);
-
-      const response = await fetch("/api/mongoDb/linkDid/create", {
+      console.log(link)
+      const response = await fetch("/api/mongoDb/credentials/linkDid/create", {
         method: "POST",
         body: JSON.stringify({
           credential: { ...vc, signature: link.signatures[0].signature },

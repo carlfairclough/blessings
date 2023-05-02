@@ -198,7 +198,7 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async ({
   const getProfile = async () => {
     try {
       const response: any = await fetch(
-        `${proto}://${headers.host}/api/mongoDb/credentials/get/${data.address}/profile`
+        `http://${headers.host}/api/mongoDb/credentials/get/${data.address}/profile`
       );
       let r = await response.json();
       return r.credential;
@@ -210,7 +210,7 @@ export const getServerSideProps: GetServerSideProps<{ data: Data }> = async ({
 
   const getLinks = async () => {
     const response: any = await fetch(
-      `${proto}://${headers.host}/api/mongoDb/credentials/get/${data.address}/accountLinks`
+      `http://${headers.host}/api/mongoDb/credentials/get/${data.address}/accountLinks`
     );
     const r = await response.json();
     if (r) {
