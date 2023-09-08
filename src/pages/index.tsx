@@ -42,7 +42,7 @@ export default function Home() {
       </Head>
       <Container w="full" maxW={"container.xl"}>
         <Text as="h1" fontSize="l" mb={8}>
-          Blessed Profilesss
+          Blessed Profiles
         </Text>
         <SimpleGrid
           columns={{ base: 1, md: 2, lg: 3, xl: 4 }}
